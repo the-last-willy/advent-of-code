@@ -1,7 +1,5 @@
 import json
 
-from helpers import str_cut_insert
-
 cursors = [
     {
         'symbol': '>',
