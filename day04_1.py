@@ -24,7 +24,7 @@ def dirs():
 
 input = ""
 
-with open("day_4_1_example.txt", "r") as f:
+with open("examples/day04.txt", "r") as f:
     input = f.read()
 
 input = input.split('\n')

@@ -2,7 +2,7 @@ import re
 
 input = ""
 
-with open("day_3_1_input.txt", "r") as f:
+with open("inputs/day03.txt", "r") as f:
     input = f.read()
 
 enabled = True
