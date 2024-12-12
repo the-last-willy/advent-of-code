@@ -33,13 +33,12 @@ cache = {}
 
 
 def count_n(x, n, step):
-    cache.setdefault(n, {})
     if n < step:
         return len(apply_n(x, n))
-    if x in cache[n]:
-        return cache[n][x]
+    if (n, x) in cache:
+        return cache[(n, x)]
     cnt = sum([count_n(y, n - step, step) for y in apply_n(x, step)])
-    cache[n][x] = cnt
+    cache[(n, x)] = cnt
     return cnt
 
 
