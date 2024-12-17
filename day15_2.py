@@ -5,7 +5,7 @@ import helpers.list
 
 input = ''
 
-with open('examples/day15.txt') as f:
+with open('inputs/day15.txt') as f:
     input = f.read().splitlines()
 
 
@@ -46,64 +46,68 @@ dirs = {
 }
 
 
-def can_move(grid, pos, dir):
+def can_move_into(grid, pos, dir):
     dy, dx = dir
     py, px = pos
     mx, my = px + dx, py + dy
-    e = grid[my][mx]
 
-    if e == '#':
-        return False
+    e = grid[py][px]
+
     if e == '.':
         return True
-    if e == '[':
-        if dx == 1 and not can_move(grid, (my, mx + 1), dir):
-            return False
-        return can_move(grid, (my, mx), dir)
-    if e == ']':
-        if dx == -1 and not can_move(grid, (my, mx - 1), dir):
-            return False
-        return can_move(grid, (my, mx), dir)
+    if e == 'X':
+        return False
+
+    m = grid[my][mx]
+
+    if not can_move_into(grid, (my, mx), dir):
+        return False
+
+    if m == '[' and dx != -1:
+        return can_move_into(grid, (my, mx + 1), dir)
+    if m == ']' and dx != +1:
+        return can_move_into(grid, (my, mx - 1), dir)
+
+    return True
 
 
-def move(grid, pos, dir) -> Tuple[int, int]:
+def move(grid, pos, dir):
     dy, dx = dir
     py, px = pos
     mx, my = px + dx, py + dy
-    e = grid[my][mx]
+    e = grid[py][px]
 
-    if can_move(grid, pos, dir):
-        if e == '[' and dx == 1:
-            move(grid, (my, mx + 1), dir)
-        elif e == ']' and dx == -1:
-            move(grid, (my, mx - 1), dir)
-        move(grid, (my, mx), dir)
+    if e in ['.', 'X']:
+        return None
 
-        grid[my][mx], grid[py][px] = grid[py][px], '.'
+    if grid[my][mx] == '[':
+        move(grid, (my, mx + 1), dir)
+    if grid[my][mx] == ']':
+        move(grid, (my, mx - 1), dir)
 
-        return my, mx
+    move(grid, (my, mx), dir)
 
+    grid[my][mx], grid[py][px] = grid[py][px], '.'
+
+    return my, mx
+
+
+def try_move(grid, pos, dir):
+    if can_move_into(grid, pos, dir):
+        return move(grid, pos, dir)
     return None
 
 
-
-for cmd in commands:
+for cmd in commands[:]:
     dir = dirs[cmd]
-    # print(cmd)
-    new_robot = move(grid, robot, dir)
+    new_robot = try_move(grid, robot, dir)
     if new_robot is not None:
         robot = new_robot
-
-    for l in grid:
-        for x in l:
-            print(x, end='')
-        print()
-    print()
 
 score = 0
 
 for y, x in g.coords(*g.size(grid)):
-    if grid[y][x] == 'O':
+    if grid[y][x] == '[':
         score += y * 100 + x
 
 print(score)

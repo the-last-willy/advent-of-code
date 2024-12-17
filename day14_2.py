@@ -22,7 +22,7 @@ def cmp(a, b):
 
 w, h = 101, 103
 
-for seconds in range(86, 10000, w):
+for seconds in range(27, 10000, w):
     img = Image.new('RGB', (w, h))
     draw = ImageDraw.Draw(img)
 
