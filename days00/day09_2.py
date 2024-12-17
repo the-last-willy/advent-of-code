@@ -1,6 +1,6 @@
 input = ''
 
-with open('inputs/day09.txt') as f:
+with open('../inputs/day09.txt') as f:
     input = f.read()
 
 # input = input[:5]

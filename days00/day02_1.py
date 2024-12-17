@@ -10,7 +10,7 @@ def is_safe(level):
 
 input = ""
 
-with open("inputs/day02.txt", "r") as f:
+with open("../inputs/day02.txt", "r") as f:
     input = f.read()
 
 levels = [[int(x) for x in l.split(' ')] for l in input.split('\n')]

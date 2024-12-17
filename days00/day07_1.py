@@ -1,6 +1,6 @@
 input = ''
 
-with open('inputs/day07.txt') as f:
+with open('../inputs/day07.txt') as f:
     input = f.read().splitlines()
 
 input = [line.split(': ') for line in input]

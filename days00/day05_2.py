@@ -40,7 +40,7 @@ def apply_rules(update, rules):
 
 input = ""
 
-with open("inputs/day05.txt", "r") as f:
+with open("../inputs/day05.txt", "r") as f:
     input = f.read()
 
 [rules, updates] = input.split('\n\n')

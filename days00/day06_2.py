@@ -21,7 +21,7 @@ cursors = {
 
 input = ""
 
-with open("inputs/day06.txt", "r") as f:
+with open("../inputs/day06.txt", "r") as f:
     input = f.read()
 
 input = [['+'] + [e for e in row] + ['+'] for row in input.split('\n')]

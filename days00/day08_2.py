@@ -2,7 +2,7 @@ import json
 
 input = ''
 
-with open('inputs/day08.txt') as f:
+with open('../inputs/day08.txt') as f:
     input = f.read().split('\n')
     input = [[c for c in line] for line in input]
 

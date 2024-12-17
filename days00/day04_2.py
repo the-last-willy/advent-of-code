@@ -43,7 +43,7 @@ def match(input, pattern, x, y, debug):
 
 input = ""
 
-with open("inputs/day04.txt", "r") as f:
+with open("../inputs/day04.txt", "r") as f:
     input = f.read()
 
 input = input.split('\n')
