@@ -2,7 +2,7 @@ import re
 
 input = ''
 
-with open('inputs/day14.txt') as f:
+with open('../inputs/day14.txt') as f:
     input = f.read()
 
 input = re.findall(r'-?\d+', input)

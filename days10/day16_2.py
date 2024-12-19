@@ -3,7 +3,7 @@ import helpers.vec2 as v
 
 input = ''
 
-with open('inputs/day16.txt') as f:
+with open('../inputs/day16.txt') as f:
     input = f.read().splitlines()
 
 input = [[x for x in row] for row in input]

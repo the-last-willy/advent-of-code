@@ -1,9 +1,8 @@
-import copy
 import json
 
 input = ''
 
-with open('inputs/day12.txt') as f:
+with open('../examples/day12.txt') as f:
     input = f.read().splitlines()
 
 input = ['.' + row + '.' for row in input]
@@ -53,36 +52,27 @@ for i, j in coords(input):
 
 # Perimeter
 
-input2 = copy.deepcopy(input)
-
-input2 = [[x.lower() for x in row] for row in input2]
-
-for i in range(len(input) - 1):
+for i in range(len(input)):
     for j in range(len(input[i]) - 1):
-        list = [indexes[i][j], indexes[i + 1][j], indexes[i][j + 1], indexes[i + 1][j + 1]]
-        count = {}
-        for x in list:
-            count.setdefault(x, 0)
-            count[x] += 1
-        for k, v in count.items():
-            if v in [1, 3]:
-                regions[k][2] += 1
-            elif v == 2:
-                if indexes[i][j] == indexes[i + 1][j + 1] or indexes[i][j + 1] == indexes[i + 1][j]:
-                    regions[k][2] += 2
+        a = indexes[i][j + 0]
+        b = indexes[i][j + 1]
 
-for row in input2:
-    for x in row:
-        print(x, end='')
-    print()
-print()
+        if a != b:
+            regions[a][2] += 1
+            regions[b][2] += 1
+
+for j in range(len(input[0])):
+    for i in range(len(input) - 1):
+        a = indexes[i + 0][j]
+        b = indexes[i + 1][j]
+
+        if a != b:
+            regions[a][2] += 1
+            regions[b][2] += 1
 
 # Total cost
 
 del regions[1]
-
-for r in regions.items():
-    print(r)
 
 total = 0
 

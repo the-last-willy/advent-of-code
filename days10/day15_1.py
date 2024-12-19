@@ -5,7 +5,7 @@ import helpers.list
 
 input = ''
 
-with open('inputs/day15.txt') as f:
+with open('../inputs/day15.txt') as f:
     input = f.read().splitlines()
 
 grid = input[:input.index('')]

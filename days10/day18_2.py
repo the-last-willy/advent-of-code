@@ -5,7 +5,7 @@ import helpers.vec2 as v
 
 input = []
 
-with open('inputs/day18.txt') as f:
+with open('../inputs/day18.txt') as f:
     for line in f.read().splitlines():
         match = re.match(r'(\d+),(\d+)', line)
         input += [(int(match.group(1)), int(match.group(2)))]

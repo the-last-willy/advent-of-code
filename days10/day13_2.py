@@ -2,7 +2,7 @@ import re
 
 input = ''
 
-with open('inputs/day13.txt', 'r') as f:
+with open('../inputs/day13.txt', 'r') as f:
     input = f.read()
 
 numbers = [int(x) for x in re.findall(r'\d+', input)]

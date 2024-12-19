@@ -1,6 +1,6 @@
 input = ''
 
-with open('inputs/day19.txt') as file:
+with open('../inputs/day19.txt') as file:
     input = file.read().splitlines()
 
 patterns = input[0].split(', ')

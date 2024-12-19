@@ -38,7 +38,7 @@ def has_neigh(input, i, j, nval):
 
 
 
-with open('inputs/day10.txt') as f:
+with open('../inputs/day10.txt') as f:
     input = f.read()
 
 input = [['.'] + [c for c in line] + ['.'] for line in input.split('\n')]
