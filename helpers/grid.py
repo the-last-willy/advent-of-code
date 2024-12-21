@@ -1,4 +1,7 @@
+import builtins
 from copy import deepcopy
+
+import helpers.vec2 as vec2
 
 
 def coords(s1, s2):
@@ -53,8 +56,9 @@ def count(g, pred):
     return sum(sum(1 for x in row if pred(x)) for row in g)
 
 
-def make(height, width, fill):
-    return [[fill for x in range(width)] for y in range(height)]
+def make(size, fill):
+    h, w = size
+    return [[fill for i in range(w)] for j in range(h)]
 
 
 def pad(g, fill):
@@ -66,3 +70,21 @@ def pad(g, fill):
 def set(g, yx, val):
     y, x = yx
     g[y][x] = val
+
+
+def dijkstra(*, start, end, candidates_fn):
+    candidates = [[start]]
+    visited = builtins.set()
+
+    while len(candidates) > 0:
+        path = candidates.pop(0)
+        pos = path[len(path) - 1]
+
+        if pos in visited:
+            continue
+        visited.add(pos)
+
+        if vec2.eq(pos, end):
+            return path
+
+        candidates += candidates_fn(path)
