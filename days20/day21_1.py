@@ -4,7 +4,7 @@ import helpers.input as i
 import helpers.num as n
 import helpers.vec2 as v
 
-input = i.read_file('examples/day21.txt').splitlines()
+input = i.read_file('../examples/day21.txt').splitlines()
 
 
 def sym_to_pos(kpd, s):

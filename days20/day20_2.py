@@ -4,7 +4,7 @@ import helpers.grid as g
 import helpers.input as i
 import helpers.vec2 as v
 
-input = i.parse_grid(i.read_file('examples/day20.txt'))
+input = i.parse_grid(i.read_file('../examples/day20.txt'))
 
 sy, sx = g.size(input)
 for yx in v.range2((1, sy - 1), (1, sx - 1)):

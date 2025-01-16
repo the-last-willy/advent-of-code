@@ -4,7 +4,7 @@ import helpers.grid as g
 import helpers.input as i
 import helpers.vec2 as v
 
-input = i.parse_grid(i.read_file('inputs/day20.txt'))
+input = i.parse_grid(i.read_file('../inputs/day20.txt'))
 
 g.printt(input)
 
