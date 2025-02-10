@@ -88,3 +88,7 @@ def dijkstra(*, start, end, candidates_fn):
             return path
 
         candidates += candidates_fn(path)
+
+
+def column(g, col):
+    return [g[i][col] for i in range(len(g))]
