@@ -92,3 +92,12 @@ def dijkstra(*, start, end, candidates_fn):
 
 def column(g, col):
     return [g[i][col] for i in range(len(g))]
+
+
+def find_val(g, x):
+    s1, s2 = size(g)
+    for i in range(s1):
+        for j in range(s2):
+            if g[i][j] == x:
+                return i, j
+    return None

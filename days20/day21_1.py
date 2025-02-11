@@ -1,165 +1,188 @@
-import json
+import unittest
 
 import helpers.input as i
-import helpers.num as n
-import helpers.vec2 as v
+from helpers.grid import *
+import helpers.vec2 as vec
 
-input = i.read_file('../examples/day21.txt').splitlines()
+num_keypad = ['789', '456', '123', ' 0A']
+dir_keypad = [' ^A', '<v>']
 
-
-def sym_to_pos(kpd, s):
-    for si, pi in kpd:
-        if si == s:
-            return pi
-    raise NotImplementedError(f'{s} not in {[x[0] for x in kpd]}')
-
-
-def pos_to_sym(kpd, p):
-    for si, pi in kpd:
-        if v.eq(pi, p):
-            return si
-    raise NotImplementedError(f'{p} not in {[x[1] for x in kpd]}')
-
-
-def diff2seq_num(d):
-    vs = 'v' if d[0] > 0 else '^'
-    hs = '>' if d[1] > 0 else '<'
-    return abs(d[1]) * hs + abs(d[0]) * vs
-
-
-dirs = {
-    '^': (-1, +0),
-    '<': (-0, -1),
-    'v': (+1, +0),
-    '>': (+0, +1),
-}
-
-dir_to_sym = {
-    (-1, +0): '^',
-    (-0, -1): '<',
-    (+1, +0): 'v',
-    (+0, +1): '>',
-    (+0, +0): '',
-}
-
-dkbd = [
-    ('^', (0, 1)),
-    ('<', (1, 0)),
-    ('v', (1, 1)),
-    ('>', (1, 2)),
-    ('A', (0, 2)),
-]
-
-dkbd_deadkey = (0, 0)
-
-nkbd = [
-    ('0', (3, 1)),
-    ('1', (2, 0)),
-    ('2', (2, 1)),
-    ('3', (2, 2)),
-    ('4', (1, 0)),
-    ('5', (1, 1)),
-    ('6', (1, 2)),
-    ('7', (0, 0)),
-    ('8', (0, 1)),
-    ('9', (0, 2)),
-    ('A', (3, 2)),
-]
-
-paths = {
-
-}
-
-nkbd_deadkey = (3, 0)
-
-paths = {
-    (0, 0): '',
-
-    (0, 1): '>A',
-    (1, 0): 'vA',
-    (0, -1): '<A',
-    (-1, 0): '^A',
+directions = {
+    '<': (0, -1),
+    '>': (0, 1),
+    'v': (1, 0),
+    '^': (-1, 0),
 }
 
 
-def diff_to_seq(diff):
-    dy, dx = diff
-    exceptions = {
-        (-2, -2): '<<^^A'
-    }
-    if diff in exceptions:
-        return exceptions[diff]
-    seq = abs(dy) * dir_to_sym[(n.sign(dy), 0)] + abs(dx) * dir_to_sym[(0, n.sign(dx))] + 'A'
-    # print(diff, seq)
-    return seq
+def is_valid_path(keyboard, pos, path):
+    for s in path:
+        pos = vec.sum(pos, directions[s])
+        if at(keyboard, pos) == ' ':
+            return False
+    return True
 
 
-debug = None
+def move(keyboard, a, b):
+    posa = find_val(keyboard, a)
+    posb = find_val(keyboard, b)
+
+    d = vec.diff(posb, posa)
+
+    v = ('v' if d[0] > 0 else '^') * abs(d[0])
+    h = ('>' if d[1] > 0 else '<') * abs(d[1])
+
+    paths = [p for p in [h + v, v + h] if is_valid_path(keyboard, posa, p)]
+    paths = sorted(paths, key=lambda p: len(encode_dirs(encode_dirs(p))))
+
+    return paths[0]
 
 
-def encode(kbd, input):
-    global debug
-    output = ''
-    pos = sym_to_pos(kbd, 'A')
-    for sym in input:
-        dest = sym_to_pos(kbd, sym)
-        diff = v.diff(dest, pos)
-        output += diff_to_seq(diff)
-        pos = dest
-    # assert (v.eq(pos, sym_to_pos(kbd, 'A')))
-    return output
+def encode_dirs(dirs):
+    dirs = 'A' + dirs
+    code = ''
+
+    for i in range(1, len(dirs)):
+        a = dirs[i - 1]
+        b = dirs[i - 0]
+
+        pa = find_val(dir_keypad, a)
+        pb = find_val(dir_keypad, b)
+
+        d = vec.diff(pb, pa)
+        
+        if d[0] > 0:
+            code += 'v' * abs(d[0])
+        
+        if d[1] > 0:
+            code += '>' * abs(d[1])
+
+        # ---
+            
+        if d[0] < 0:
+            code += '^' * abs(d[0])
+
+        if d[1] < 0:
+            code += '<' * abs(d[1])
+
+        code += 'A'
+
+    return code
 
 
-def decode(kbd, input):
-    output = ''
-    pos = sym_to_pos(kbd, 'A')
-    for sym in input:
-        if sym == 'A':
-            output += pos_to_sym(kbd, pos)
+def encode_nums(nums):
+    nums = 'A' + nums
+    code = ''
+
+    for i in range(1, len(nums)):
+        a = nums[i - 1]
+        b = nums[i - 0]
+
+        code += move(num_keypad, a, b)
+
+        code += 'A'
+
+    return code
+
+
+def decode(keypad, dirs):
+    pos = find_val(keypad, 'A')
+    code = ''
+    for d in dirs:
+        if d == 'A':
+            code += at(keypad, pos)
         else:
-            pos = v.sum(pos, dirs[sym])
-    return output
+            pos = vec.sum(pos, directions[d])
+    return code
 
 
-def special_encode(seq3):
-    seq2 = encode(nkbd, seq3)
-    seq1 = encode(dkbd, seq2)
-    seq0 = encode(dkbd, seq1)
-    return [seq0, seq1, seq2, seq3]
+def encode1(nums):
+    return encode_nums(nums)
 
 
-def special_decode(seq0):
-    seq1 = decode(dkbd, seq0)
-    seq2 = decode(dkbd, seq1)
-    seq3 = decode(nkbd, seq2)
-    return [seq0, seq1, seq2, seq3]
+def encode2(nums):
+    return encode_dirs(encode1(nums))
 
 
-score = 0
-
-for code in input:
-    seqs = special_encode(code)
-    # print(f'{code}: {seqs[0]}')
-    # for s in seqs:
-    #     print(s)
-    score += int(code[:len(code) - 1]) * len(seqs[0])
-
-print(score)
+def encode3(nums):
+    return encode_dirs(encode2(nums))
 
 
-def cost(seq):
-    c = 0
-    for i in range(0, len(seq) - 1):
-        dy, dx = v.diff(sym_to_pos(dkbd, seq[i]), sym_to_pos(dkbd, seq[i + 1]))
-        c += abs(dy) + abs(dx)
-    return c
+def decode1(dirs):
+    return decode(dir_keypad, dirs)
 
-print()
 
-print(special_encode('456A'))
-print(special_decode('<v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A'))
+def decode2(dirs):
+    return decode(dir_keypad, decode1(dirs))
 
-print(encode(dkbd, '<vA'), cost(encode(dkbd, '<vA')))
-print(encode(dkbd, 'v<A'), cost(encode(dkbd, 'v<A')))
-print(cost('v<A<A>>^A'), cost('v<A<A^>>A'))
 
+def decode3(dirs):
+    return decode(num_keypad, decode2(dirs))
+
+
+class TestDay21Part1(unittest.TestCase):
+    def test_corner_case(self):
+        self.assertEqual(
+            '^A<<^^A>>AvvvA',
+            encode1('379A')
+        )
+
+    def subtests_for(self, code, encoded3):
+        print(f'Code      : {code}')
+        print(f'Actual   1: {encode1(code)}')
+        print(f'Expected 1: {decode2(encoded3)}')
+        print(f'Actual   2: {encode2(code)}')
+        print(f'Expected 2: {decode1(encoded3)}')
+        print(f'Actual   3: {encode3(code)}')
+        print(f'Expected 3: {encoded3}')
+
+        with self.subTest('encode1'):
+            self.assertEqual(
+                decode2(encoded3),
+                encode1(code))
+        with self.subTest('len encode2'):
+            self.assertLen(
+                decode1(encoded3),
+                encode2(code))
+        with self.subTest('len encode3'):
+            self.assertLen(
+                encoded3,
+                encode3(code))
+
+    def test_029A(self):
+        self.subtests_for('029A', '<vA<AA>>^AvAA<^A>A<v<A>>^AvA^A<vA>^A<v<A>^A>AAvA^A<v<A>A>^AAAvA<^A>A')
+
+    def test_980A(self):
+        self.subtests_for('980A', '<v<A>>^AAAvA^A<vA<AA>>^AvAA<^A>A<v<A>A>^AAAvA<^A>A<vA>^A<A>A')
+
+    def test_179A(self):
+        self.subtests_for('179A', '<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A')
+
+    def test_456A(self):
+        self.subtests_for('456A', '<v<A>>^AA<vA<A>>^AAvAA<^A>A<vA>^A<A>A<vA>^A<A>A<v<A>A>^AAvA<^A>A')
+
+    def test_379A(self):
+        self.subtests_for('379A', '<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A')
+
+    def test_example(self):
+        codes = ['029A', '980A', '179A', '456A', '379A']
+        sum = 0
+        for c in codes:
+            sum += len(encode3(c)) * int(c[:-1])
+        self.assertEqual(126384, sum)
+
+    def test_input(self):
+        codes = i.read_file('../inputs/day21.txt').splitlines()
+        print(codes)
+        sum = 0
+        for c in codes:
+            sum += len(encode3(c)) * int(c[:-1])
+        print(sum)
+
+    def assertLen(self, expected, actual):
+        self.assertEqual(
+            len(expected), len(actual),
+            f"""
+            Expected: {expected}
+            Actual:   {actual}
+            """)
